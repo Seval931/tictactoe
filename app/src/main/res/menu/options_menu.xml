@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/new_game"
+        android:title="New Game"
+        android:icon="@drawable/new_game"
+        app:showAsAction="always"
+        android:visible="true"/>
+
+    <item android:id="@+id/settings"
+        android:title="Difficulty"
+        android:icon="@drawable/difficulty_level"
+        app:showAsAction="always"
+        android:visible="true"/>
+
+    <item android:id="@+id/about"
+        android:title="About"
+        android:icon="@drawable/about_icon"
+        app:showAsAction="always"
+        android:visible="true"/>
+    <item android:id="@+id/reset"
+        android:title="Reset Scores"
+        android:icon="@drawable/delete_icon"
+        app:showAsAction="always"
+        android:visible="true"/>
+    <item android:id="@+id/quit"
+        android:title="Quit"
+        android:icon="@drawable/quit_game"
+        app:showAsAction="always"
+        android:visible="true"/>
+</menu>
