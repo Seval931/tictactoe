@@ -6,6 +6,8 @@ package edu.harding.tictactoe;
  * is X and the computer is O.
  */
 
+import com.firebase.client.Firebase;
+
 import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
@@ -26,6 +28,8 @@ public class TicTacToeGame {
     public static final char OPEN_SPOT = ' ';
 
     private Random mRand;
+
+
 
     public TicTacToeGame() {
 

@@ -24,6 +24,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
+
 import edu.harding.tictactoe.BoardView;
 import edu.harding.tictactoe.TicTacToeGame;
 
@@ -60,6 +62,9 @@ public class AndroidTicTacToeActivity extends AppCompatActivity {
             mComputerMediaPlayer.start();
         }
     };
+
+    private Firebase firebase;
+    private String FIREBASE_URL = "https://tictactoe-59f3b.firebaseio.com/";
 
 
     @Override

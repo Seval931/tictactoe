@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1056669364161",
+    "firebase_url": "https://tictactoe-59f3b.firebaseio.com",
+    "project_id": "tictactoe-59f3b",
+    "storage_bucket": "tictactoe-59f3b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1056669364161:android:af71545110a10b38",
+        "android_client_info": {
+          "package_name": "tictactoe.unal.edu.co.androidtic_tac_toe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1056669364161-dv0em5u7s7p8ft514cgne3bp73tmue43.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOtPPKwC84P6oYThEWkqzusoX8tIzs41o"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
