@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "872880191811-0s049sj0bdlpc481m8rfpl7u0rmmvu6d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "tictactoe.unal.edu.co.androidtic_tac_toe",
+            "certificate_hash": "eb397be9e1b3bb0d7287d12cba53a00cc4fd3428"
+          }
+        },
+        {
           "client_id": "872880191811-n3b47515rb3gn81gphmst18dmnp09btk.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
