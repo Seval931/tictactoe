@@ -304,8 +304,12 @@ public class AndroidTicTacToeActivity extends AppCompatActivity {
             if (!mGameOver) {
                 int winner = 0;
                 if (turn == identity) {
-                    if (setMove(TicTacToeGame.HUMAN_PLAYER, pos)) {
-                        turn = mGame.COMPUTER_PLAYER;
+                    if (setMove(identity, pos)) {
+                        if(identity==mGame.HUMAN_PLAYER)
+                            turn = mGame.COMPUTER_PLAYER;
+                        else
+                            turn = mGame.HUMAN_PLAYER;
+
                         winner = mGame.checkForWinner();
                     }
                 }
