@@ -199,6 +199,14 @@ public class TicTacToeGame {
         mBoard=boardState;
     }
 
+    public String boardString(){
+        String str="";
+        for(int i=0;i<mBoard.length;i++){
+            str=str+""+mBoard[i];
+        }
+        return str;
+    }
+
     public void clearBoard(){
         for (int i=0;i<BOARD_SIZE;i++){
             mBoard[i]= OPEN_SPOT;

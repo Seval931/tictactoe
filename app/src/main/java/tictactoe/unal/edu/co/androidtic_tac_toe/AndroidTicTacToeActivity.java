@@ -22,7 +22,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,8 +30,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+
+
 
 import edu.harding.tictactoe.BoardView;
 import edu.harding.tictactoe.TicTacToeGame;
@@ -43,8 +43,7 @@ public class AndroidTicTacToeActivity extends AppCompatActivity {
 
     private TicTacToeGame mGame;
 
-    //Buttons making up the board
-    private Button mBoardButtons[];
+
 
     //Various text displayed
     private TextView mInfoTextView;
@@ -71,14 +70,12 @@ public class AndroidTicTacToeActivity extends AppCompatActivity {
     };
 
 
-
-    /*private Firebase firebase;
-    //FirebaseStorage storage = FirebaseStorage.getInstance();*/
     FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private  DatabaseReference mDatabase, mDatabaseSingle;
-    private String gameList="Juegos";
-    private String game="1";
+    private  DatabaseReference mDatabase =database.getReference();
+    private DatabaseReference juego = mDatabase.child("Juegos").child("1");
+    private GameFirebase gameFirebase=new GameFirebase();
     private char identity;
+
 
 
     @Override
@@ -112,65 +109,54 @@ public class AndroidTicTacToeActivity extends AppCompatActivity {
         tieScore = mPrefs.getInt("mTies", 0);
         //mGame.setDifficultyLevel(TicTacToeGame.DifficultyLevel.valueOf(mPrefs.getString("Difficulty","EXPERT")));
 
-        mDatabase=database.getReference(gameList+"/"+game);
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                     @Override
-                                                     public void onDataChange(DataSnapshot snapshot) {
-                                                         JSONObject array=snapshot.getValue(JSONObject.class);
-                                                         int players=0;
-                                                         try {
-                                                             players = array.getInt("usuarios");
-                                                         }catch (Exception e){
-
-                                                         }
-                                                         switch (players){
-                                                             case 11: players=21;
-                                                                 identity=mGame.HUMAN_PLAYER;
-                                                                 mDatabase.child("usuarios").setValue(players);
-                                                                 break;
-                                                             case 21: players=22;
-                                                                 identity=mGame.COMPUTER_PLAYER;
-                                                                 mDatabase.child("usuarios").setValue(players);
-                                                                 break;
-                                                             case 12: players=22;
-                                                                 identity=mGame.HUMAN_PLAYER;
-                                                                 mDatabase.child("usuarios").setValue(players);
-                                                                 break;
-                                                             default:
-                                                                 identity='E';
-
-                                                         }
-                                                     }
-
-                                                     @Override
-                                                     public void onCancelled(DatabaseError databaseError) {
-
-                                                     }
-                                                 }
-        );
-
-        mDatabase.addValueEventListener( new ValueEventListener() {
+        juego.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                // Get Post object and use the values to update the UI
-                JSONObject array=dataSnapshot.getValue(JSONObject.class);
-                try {
-                    mGame.setBoardState(array.getString("tablero").toCharArray());
-                    turn=array.getString("turno").toCharArray()[0];
-                    mGameOver=array.getBoolean("gameOver");
+                GameFirebase temp =dataSnapshot.getValue(GameFirebase.class);
+                if(temp.getJugadorHost().equals("none")){
+                    juego.child("jugadorHost").setValue("ocupado");
+                    identity=mGame.HUMAN_PLAYER;
+                }else {
+                    if(temp.getJugador2().equals("none")){
+                        juego.child("jugador2").setValue("ocupado");
+                        identity=mGame.COMPUTER_PLAYER;
+                    }
+                    else {
+                        identity='K';
+                    }
                 }
-                catch (Exception e){}
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        juego.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                gameFirebase = dataSnapshot.getValue(GameFirebase.class);
+                mGame.setBoardState(gameFirebase.getTablero().toCharArray());
+                turn=gameFirebase.getTurno().toCharArray()[0];
+                mGameOver=gameFirebase.isGameOver();
+                mBoardView.invalidate();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Getting Post failed, log a message
             }
-        }
-        );
+        });
+        //Log.d("ejtamonda",gameFirebase.getTablero()+"");
+
+
+
         displayScores();
 
     }
+
+
 
     public void displayScores(){
         mScoreTextView.setText("Human:" + humanScore + "   Ties:" + tieScore + "   Android:" + androidScore);
@@ -178,9 +164,11 @@ public class AndroidTicTacToeActivity extends AppCompatActivity {
 
     private void startNewGame() {
         displayScores();
-        mGame.clearBoard();
         mBoardView.invalidate(); //Redraw the board
-        mGameOver = false;
+        mGame.clearBoard();
+        juego.child("tablero").setValue(mGame.boardString());
+        juego.child("turno").setValue("X");
+        juego.child("gameOver").setValue(false);
 
         //Human goes first
         mInfoTextView.setText(R.string.first_human);
@@ -275,7 +263,11 @@ public class AndroidTicTacToeActivity extends AppCompatActivity {
 
     private boolean setMove(char player, int location) {
 
+        //char[] board= mGame.getBoardState();
+        Log.d("IDENTIDAD", identity+"");
         if (mGame.setMove(player, location)) {
+            Log.d("esta mierda DEL DEMONIO", "llegueeeeeeeeeeeeeeeeeee");
+            juego.child("tablero").setValue(mGame.boardString());
             if(player==mGame.HUMAN_PLAYER&&mSoundOn){
                 mHumanMediaPlayer.start();
             }
@@ -304,11 +296,13 @@ public class AndroidTicTacToeActivity extends AppCompatActivity {
             if (!mGameOver) {
                 int winner = 0;
                 if (turn == identity) {
+                    Log.d("CONTROL DE LLEGADA","LLEGUUEEEEEEEEEE");
                     if (setMove(identity, pos)) {
+
                         if(identity==mGame.HUMAN_PLAYER)
-                            turn = mGame.COMPUTER_PLAYER;
+                            juego.child("turno").setValue(mGame.COMPUTER_PLAYER+"");
                         else
-                            turn = mGame.HUMAN_PLAYER;
+                            juego.child("turno").setValue(mGame.HUMAN_PLAYER+"");
 
                         winner = mGame.checkForWinner();
                     }
@@ -317,7 +311,7 @@ public class AndroidTicTacToeActivity extends AppCompatActivity {
 
                 if (winner == 0 && turn != identity) {
                     mInfoTextView.setText(R.string.turn_computer);
-                    winner = mGame.checkForWinner();
+                    //winner = mGame.checkForWinner();
                 }
 
                 if (winner == 0) {
@@ -337,10 +331,12 @@ public class AndroidTicTacToeActivity extends AppCompatActivity {
 
     private void messagesAndScore(int winner){
         if(winner==1){
+            juego.child("gameOver").setValue(true);
             mInfoTextView.setText(R.string.result_tie);
             tieScore += 1;
         }
         else if (winner == 2) {
+            juego.child("gameOver").setValue(true);
             if (identity == mGame.HUMAN_PLAYER) {
                 humanScore++;
                 String defaultMessage = getResources().getString(R.string.result_human_wins);
@@ -352,6 +348,7 @@ public class AndroidTicTacToeActivity extends AppCompatActivity {
                 androidScore ++;
             }
         } else if (winner == 3) {
+            juego.child("gameOver").setValue(true);
             if (identity == mGame.HUMAN_PLAYER) {
                 humanScore++;
                 String defaultMessage = getResources().getString(R.string.result_human_wins);
@@ -409,8 +406,19 @@ public class AndroidTicTacToeActivity extends AppCompatActivity {
         ed.putInt("mTies", tieScore);
         ed.putString("Difficulty",mGame.getDifficultyLevel()+"");
         ed.commit();
+
     }
 
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        juego.child("jugadorHost").setValue("none");
+        juego.child("jugador2").setValue("none");
+        mGame.clearBoard();
+        juego.child("tablero").setValue(mGame.boardString());
+        juego.child("turno").setValue("X");
+        juego.child("gameOver").setValue(false);
+    }
 
 }
 
